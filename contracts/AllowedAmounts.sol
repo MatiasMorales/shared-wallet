@@ -3,31 +3,51 @@
 pragma solidity ^0.8.1;
 
 import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/access/Ownable.sol";
-import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/math/SafeMath.sol";
 
 contract AllowedAmounts is Ownable {
+    using SafeMath for uint256;
 
-    using SafeMath for uint;
-    
-    mapping(address => uint) amountsToWithdraw;
+    mapping(address => uint256) amountsToWithdraw;
 
-    modifier allowedToWithDraw(uint _amount) {
-        require(owner() == msg.sender ||
-         _amount <= amountsToWithdraw[msg.sender], "Not allowed to withdraw such amount.");
+    modifier allowedToWithDraw(uint256 _amount) {
+        require(
+            owner() == msg.sender || _amount <= amountsToWithdraw[msg.sender],
+            "Not allowed to withdraw such amount."
+        );
         _;
     }
 
-    event AllowedAmountChanged(address indexed _from, address indexed _subject, uint _oldAmount, uint _newAmount);
+    event AllowedAmountChanged(
+        address indexed _from,
+        address indexed _subject,
+        uint256 _oldAmount,
+        uint256 _newAmount
+    );
 
-    function changeAllowance(address _subject, uint _amount) public onlyOwner {
-        emit AllowedAmountChanged(msg.sender, _subject, amountsToWithdraw[_subject], _amount);
+    function changeAllowance(address _subject, uint256 _amount)
+        public
+        onlyOwner
+    {
+        emit AllowedAmountChanged(
+            msg.sender,
+            _subject,
+            amountsToWithdraw[_subject],
+            _amount
+        );
 
         amountsToWithdraw[_subject] = _amount;
     }
 
-    function reduceAmountToWithdraw(address _subject, uint _amount) internal {
-        emit AllowedAmountChanged(msg.sender, _subject, amountsToWithdraw[_subject], amountsToWithdraw[_subject] - _amount);
+    function reduceAmountToWithdraw(address _subject, uint256 _amount)
+        internal
+    {
+        emit AllowedAmountChanged(
+            msg.sender,
+            _subject,
+            amountsToWithdraw[_subject],
+            amountsToWithdraw[_subject] - _amount
+        );
 
-         amountsToWithdraw[_subject] = amountsToWithdraw[_subject].sub(_amount);
+        amountsToWithdraw[_subject] -= amountsToWithdraw[_subject];
     }
 }
