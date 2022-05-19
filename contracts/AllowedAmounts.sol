@@ -5,8 +5,6 @@ pragma solidity ^0.8.1;
 import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/access/Ownable.sol";
 
 contract AllowedAmounts is Ownable {
-    using SafeMath for uint256;
-
     mapping(address => uint256) amountsToWithdraw;
 
     modifier allowedToWithDraw(uint256 _amount) {
